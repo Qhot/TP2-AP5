@@ -5,7 +5,7 @@ import {
 } from 'express'
 
 import OrderService from './orders.service'
-import OrderProxy from './oders.proxy'
+import OrderProxy from './orders.proxy'
 import IService from './services.interface'
 
 export default class OrdersController {
@@ -68,7 +68,9 @@ export default class OrdersController {
   public update = async (request: Request, response: Response) => {
     // returns 204
     const result = await this.orderService.update(Number(request.params.id), request.body)
-    if (result) {
+    if (result === false) {
+      response.sendStatus(404)
+    } else {
       response.sendStatus(202)
     }
   }

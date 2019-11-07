@@ -5,7 +5,8 @@
 1. I just reused the file from the correction.
 2. After checking the order.example.ts file, I recreated it with a class. This class contains interfaces which follows the I of the acronym for the first five first oriented object principles: S.O.L.I.D. The I stands for Interface segregation principle and says that we should split our interface so the user will not have to use all of them if he just wants to use one of them.
 3. The principle used for this is the S of S.O.L.I.D. It says that a class should have only one responsability. The Design Patern I used is called Adapter.
-4. We used a Proxy to secure the private informations from contact. 
+4. I used a Proxy to secure the private informations from contact.
+5.  This principle is the MVC which is made to separate Models, Views and Controllers.
 
 
 ## Get started

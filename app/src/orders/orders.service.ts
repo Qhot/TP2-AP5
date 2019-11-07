@@ -1,22 +1,19 @@
-import {
-    delAsync,
-    getAsync,
-    setAsync,
-} from '../../utils/storage'
-
 import IOrder from './orders.interface'
-import IService from './services.interface';
+import IService from './services.interface'
+import Order from './orders.model'
 
 export default class OrderService implements IService {
 
+    public orderModel = new Order('orders')
+
     public getAll = async () => {
-        const raw: string = await getAsync('orders')
+        const raw: string = await this.orderModel.getData()
         const orders: IOrder[] | [] = JSON.parse(raw) || []
         return orders
     }
 
     public getById = async (id: number) => {
-        const rawOrders: string = await getAsync('orders')
+        const rawOrders: string = await this.orderModel.getData()
         const orders: IOrder[] | [] = JSON.parse(rawOrders) || []
 
         // tslint:disable-next-line: triple-equals
@@ -30,7 +27,7 @@ export default class OrderService implements IService {
     }
 
     public create = async (orderInformations: any) => {
-        const rawOrders: string = await getAsync('orders')
+        const rawOrders: string = await this.orderModel.getData()
         const orders: IOrder[] | [] = JSON.parse(rawOrders) || []
 
         const sortedOrders: IOrder[] | [] = orders.sort((previous: any, current: any) => {
@@ -47,13 +44,13 @@ export default class OrderService implements IService {
         }
 
         const newOrders: IOrder[] = [...orders, orderToSave]
-        await setAsync('orders', JSON.stringify(newOrders))
+        await this.orderModel.setData(newOrders)
 
         return orderToSave
     }
 
     public delete = async (id: number) => {
-        const rawOrders: string = await getAsync('orders')
+        const rawOrders: string = await this.orderModel.getData()
         const orders: IOrder[] | [] = JSON.parse(rawOrders) || []
         // tslint:disable-next-line: triple-equals
         const orderToDelete: IOrder | null = orders.find((order) => order.id == id)
@@ -63,18 +60,18 @@ export default class OrderService implements IService {
         }
 
         const newOrders: IOrder[] = orders.filter((order) => order.id !== orderToDelete.id)
-        await setAsync('orders', JSON.stringify(newOrders))
+        await this.orderModel.setData(newOrders)
 
         return true
     }
 
     public deleteAll = async () => {
-        await delAsync('orders')
+        await this.orderModel.delAllData()
         return true
     }
 
     public update = async (id: number, updateInformations: any) => {
-        const rawOrders: string = await getAsync('orders')
+        const rawOrders: string = await this.orderModel.getData()
         const orders = JSON.parse(rawOrders) || []
         // tslint:disable-next-line: triple-equals
         const orderToUpdate = orders.find((order: any) => order.id == id)
@@ -91,7 +88,7 @@ export default class OrderService implements IService {
         // tslint:disable-next-line: triple-equals
         const newOrders = orders.map((order: any) => order.id == updated.id ? updated : order)
 
-        await setAsync('orders', JSON.stringify(newOrders))
+        await this.orderModel.setData(newOrders)
 
         return true
     }
