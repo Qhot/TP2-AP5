@@ -4,18 +4,13 @@ import {
   Router,
 } from 'express'
 
-import {
-  delAsync,
-  getAsync,
-  setAsync,
-} from '../../utils/storage'
-
-import IOrder from './orders.interface'
+import OrderService from './orders.service'
 
 export default class OrdersController {
   public path = '/orders'
   public pathId = '/orders/:id'
   public router = Router()
+  public orderService = new OrderService()
 
   constructor() {
     this.initializeRoutes()
@@ -31,94 +26,48 @@ export default class OrdersController {
   }
 
   public getAll = async (request: Request, response: Response) => {
-    response.json(JSON.parse(await getAsync('orders')) || [])
+    // returns the orders
+    return response.json(await this.orderService.getAll())
   }
 
   public getById = async (request: Request, response: Response) => {
-    const id = Number(request.params.id)
-
-    const rawOrders: string = await getAsync('orders')
-    const orders: IOrder[] = JSON.parse(rawOrders) || []
-
-    // tslint:disable-next-line: triple-equals
-    const foundOrder: IOrder = orders.find((order) => order.id == id)
-
-    if (!foundOrder) {
-      return response.sendStatus(404)
+    // returns the order or 404
+    const result = await this.orderService.getById(Number(request.params.id))
+    if (result === null) {
+      response.sendStatus(404)
+    } else {
+      response.json(result)
     }
-
-    response.json(foundOrder)
   }
 
   public create = async (request: Request, response: Response) => {
-    let orderToSave = request.body
-    const rawOrders: string = await getAsync('orders')
-    const orders: IOrder[] = JSON.parse(rawOrders) || []
-
-    const sortedOrders = orders.sort((previous: any, current: any) => {
-      return current.id - previous.id
-    })
-    const lastId = sortedOrders.length > 0 ? sortedOrders[0].id : 0
-
-    // Generate automatic data
-    orderToSave = {
-      ...orderToSave,
-      id: lastId + 1,
-      createdAt: new Date(),
-    }
-
-    orders.push(orderToSave)
-    await setAsync('orders', JSON.stringify(orders))
-
-    response.status(201).json(orderToSave)
+    // returns the orderToSave
+    return response.json(await this.orderService.create(request.body))
   }
 
   public delete = async (request: Request, response: Response) => {
-    const id = Number(request.params.id)
-
-    const rawOrders: string = await getAsync('orders')
-    const orders: IOrder[] = JSON.parse(rawOrders) || []
-    // tslint:disable-next-line: triple-equals
-    const orderToDelete: IOrder = orders.find((order) => order.id == id)
-
-    if (!orderToDelete) {
-      return response.sendStatus(404)
+    // returns 204 for success or 404
+    const result = await this.orderService.delete(Number(request.params.id))
+    if (result === null) {
+      response.sendStatus(404)
+    } else {
+      response.sendStatus(200)
     }
-
-    const newOrders: IOrder[] = orders.filter((order) => order.id !== orderToDelete.id)
-    await setAsync('orders', JSON.stringify(newOrders))
-
-    response.sendStatus(204)
   }
 
   public deleteAll = async (request: Request, response: Response) => {
-    await delAsync('orders')
-    response.sendStatus(204)
+    // returns 204
+    const result = await this.orderService.deleteAll()
+    if (result) {
+      response.sendStatus(200)
+    }
   }
 
   public update = async (request: Request, response: Response) => {
-    const updateInformations: any = request.body
-    const id = Number(request.params.id)
-
-    const rawOrders: string = await getAsync('orders')
-    const orders: IOrder[] = JSON.parse(rawOrders) || []
-    // tslint:disable-next-line: triple-equals
-    const orderToUpdate = orders.find((order: any) => order.id == id)
-
-    if (!orderToUpdate) {
-      return response.sendStatus(404)
+    // returns 204
+    const result = await this.orderService.update(Number(request.params.id), request.body)
+    if (result) {
+      response.sendStatus(202)
     }
-
-    const updated = {
-      ...orderToUpdate,
-      ...updateInformations,
-    }
-
-    // tslint:disable-next-line: triple-equals
-    const newOrders = orders.map((order: any) => order.id == updated.id ? updated : order)
-
-    await setAsync('orders', JSON.stringify(newOrders))
-
-    response.sendStatus(204)
   }
 }
