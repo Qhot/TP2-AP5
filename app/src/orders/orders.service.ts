@@ -5,8 +5,9 @@ import {
 } from '../../utils/storage'
 
 import IOrder from './orders.interface'
+import IService from './services.interface';
 
-export default class OrderService {
+export default class OrderService implements IService {
 
     public getAll = async () => {
         const raw: string = await getAsync('orders')
