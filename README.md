@@ -3,6 +3,7 @@
 ## Answers to the questions
 
 1. I just reused the file from the correction.
+2. After checking the order.example.ts file, I recreated it with a class. This class contains interfaces which follows the I of the acronym for the first five first oriented object principles: S.O.L.I.D. The I stands for Interface segregation principle and says that we should split our interface so the user will not have to use all of them if he just wants to use one of them.
 
 
 ## Get started
