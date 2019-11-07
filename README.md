@@ -7,6 +7,7 @@
 3. The principle used for this is the S of S.O.L.I.D. It says that a class should have only one responsability. The Design Patern I used is called Adapter.
 4. I used a Proxy to secure the private informations from contact.
 5.  This principle is the MVC which is made to separate Models, Views and Controllers.
+6. ![alt text](./TP_TypeScript.png)
 
 
 ## Get started
